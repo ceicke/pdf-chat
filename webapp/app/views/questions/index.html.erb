@@ -1,0 +1,18 @@
+<div class="container is-fluid">
+  <div class="section">
+    <%= turbo_frame_tag "answer" %>
+  </div>
+
+  <%= turbo_frame_tag "new_question", target: "_top" do %>
+    <%= form_tag questions_path do |f| %>
+    <div class="field is-grouped">
+      <div class="control is-expanded">
+        <input class="input" id="question-input" name="question[question]" type="text" placeholder="Was möchtest du wissen?">
+      </div>
+      <div class="control">
+        <button class="button is-info">Los</button>
+      </div>
+    </div>
+    <% end %>
+  <% end %>
+</div>

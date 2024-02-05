@@ -1,0 +1,17 @@
+<%= form_tag(uploader_path, multipart: true) do |form| %>
+  <div class="field is-grouped">
+    <div class="file">
+      <label class="file-label">
+        <input class="file-input" type="file" name="file">
+        <span class="file-cta">
+          <span class="file-label">
+            Datei auswählen
+          </span>
+        </span>
+      </label>
+    </div>
+    <div class="control">
+      <button class="button is-info">Hochladen</button>
+    </div>
+  </div>
+<% end %>

@@ -147,7 +147,7 @@ FileUtils.mkdir_p(['pdfs', 'txts'])
 
 print 'Please wait, preparing your data...'.yellow
 
-#extract_texts_from_pdf_directory('pdfs')
+extract_texts_from_pdf_directory('pdfs')
 insert_into_weaviate()
 
 puts ' done'.green
