@@ -125,8 +125,8 @@ def insert_into_weaviate
   progressbar = ProgressBar.create(title: 'Saving vectors', total: Dir.glob(File.join('txts', '*')).select.count)
 
   # Add data to the index. Weaviate will use OpenAI to generate embeddings behind the scene.
-  Dir['txts/*'].each do |f|
-    if File.file?(f) && File.readable?(f)
+  Dir['txts/*.txt'].each do |f|
+    if File.file?(f) && File.readable?(f) && !File.exist?("txts/#{File.basename(f)}.trained")
       progressbar.increment
       begin
         splitter.chunks(File.read(f).strip).each do |chunk|
@@ -134,6 +134,7 @@ def insert_into_weaviate
             texts: chunk[:text]
           )
         end
+        FileUtils.touch("txts/#{File.basename(f)}.trained")
       rescue Exception => e
         print " Error with file: #{f} ".red
       end
