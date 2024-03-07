@@ -13,3 +13,7 @@ gem 'dotenv'
 gem 'aws-sdk'
 
 gem 'pry'
+
+gem "baran", "~> 0.1.10"
+
+gem "ruby-progressbar", "~> 1.13"

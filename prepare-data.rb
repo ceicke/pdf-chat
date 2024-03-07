@@ -6,6 +6,8 @@ require 'highline'
 require 'fileutils'
 require "dotenv/load"
 require 'aws-sdk'
+require 'baran'
+require 'ruby-progressbar'
 
 require 'pry'
 
@@ -55,8 +57,6 @@ def extract_text(local_file)
     # Get the status of the Textract job
     job_status = textract_client.get_document_text_detection({ job_id: job_id }).job_status
 
-    print '.'.yellow
-
     # Check if the job is completed
     break if job_status == 'SUCCEEDED' || job_status == 'FAILED'
 
@@ -78,9 +78,6 @@ def extract_text(local_file)
       key: s3_object_key
     })
 
-    # Print the extracted text
-    print 'o'.green
-
     return text
   else
     puts "Textract job failed for file #{File.basename(local_file)}. Check the Textract console for more details."
@@ -89,24 +86,15 @@ def extract_text(local_file)
 end
 
 def extract_texts_from_pdf_directory(directory)
+  progressbar = ProgressBar.create(title: 'PDF OCR', total: Dir.glob(File.join(directory, '*')).select.count)
   Dir["#{directory}/*"].each do |f|
+    progressbar.increment
     if File.file?(f) && File.readable?(f) && !File.exist?("txts/#{File.basename(f)}.txt")
       File.open("txts/#{File.basename(f)}.txt", 'w') do |textfile|
         textfile.write(extract_text(f))
       end      
     end
   end
-end
-
-def read_files_from_directory_into_array(directory)
-  arr = []
-  Dir["#{directory}/*"].each do |f|
-    if File.file?(f) && File.readable?(f)
-      arr << File.read(f).strip
-      print 'o'.green
-    end
-  end
-  return arr
 end
 
 def insert_into_weaviate
@@ -128,14 +116,24 @@ def insert_into_weaviate
   weaviate.destroy_default_schema
   weaviate.create_default_schema
 
+  splitter = Baran::CharacterTextSplitter.new(
+    chunk_size: 1024,
+    chunk_overlap: 64,
+    separator: ' '
+  )
+
+  progressbar = ProgressBar.create(title: 'Saving vectors', total: Dir.glob(File.join('txts', '*')).select.count)
+
   # Add data to the index. Weaviate will use OpenAI to generate embeddings behind the scene.
   Dir['txts/*'].each do |f|
     if File.file?(f) && File.readable?(f)
+      progressbar.increment
       begin
-        weaviate.add_texts(
-          texts: File.read(f).strip
-        )
-        print '.'.green
+        splitter.chunks(File.read(f).strip).each do |chunk|
+          weaviate.add_texts(
+            texts: chunk[:text]
+          )
+        end
       rescue Exception => e
         print " Error with file: #{f} ".red
       end
@@ -145,10 +143,5 @@ end
 
 FileUtils.mkdir_p(['pdfs', 'txts'])
 
-print 'Please wait, preparing your data...'.yellow
-
 extract_texts_from_pdf_directory('pdfs')
 insert_into_weaviate()
-
-puts ' done'.green
-
