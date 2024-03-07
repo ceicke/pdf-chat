@@ -113,8 +113,8 @@ def insert_into_weaviate
   )
 
   # Create the default schema.
-  weaviate.destroy_default_schema
-  weaviate.create_default_schema
+  #weaviate.destroy_default_schema
+  #weaviate.create_default_schema
 
   splitter = Baran::CharacterTextSplitter.new(
     chunk_size: 1024,
