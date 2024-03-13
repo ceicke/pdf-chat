@@ -4,5 +4,5 @@ Rails.application.routes.draw do
   resource :uploader, only: [:new, :create]
 
   # Defines the root path route ("/")
-  root "questionss#index"
+  root "questions#index"
 end
