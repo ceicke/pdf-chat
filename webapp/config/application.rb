@@ -34,7 +34,7 @@ module Webapp
     config.pdf_storage = '../pdfs'
 
     config.weaviate = Langchain::Vectorsearch::Weaviate.new(
-      url: 'http://127.0.0.1:8080',
+      url: "http://#{ENV['WEAVIATE_IP']}:8080",
       api_key: '',
       index_name: "PDF1",
       llm: Langchain::LLM::OpenAI.new(

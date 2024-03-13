@@ -1,0 +1,13 @@
+{
+  "name": "PDF-Chat",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "web",
+  "workspaceFolder": "/pdf-chat",
+  "shutdownAction": "stopCompose",
+  "portsAttributes": {
+    "3000": {
+      "label": "PDF-Chat",
+      "onAutoForward": "notify"
+    }
+  }
+}

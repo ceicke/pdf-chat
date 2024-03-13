@@ -1,0 +1,29 @@
+<%= form_with(model: prompt) do |form| %>
+  <% if prompt.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(prompt.errors.count, "error") %> prohibited this prompt from being saved:</h2>
+
+      <ul>
+        <% prompt.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <p>Use %question where the question should be inserted.</p>
+
+  <div>
+    <%= form.label :prompt, style: "display: block" %>
+    <%= form.text_area :prompt %>
+  </div>
+
+  <div>
+    <%= form.label :chosen, style: "display: block" %>
+    <%= form.check_box :chosen %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
